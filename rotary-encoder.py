@@ -38,14 +38,14 @@ def my_callback(channel):
     sig2 = GPIO.input(pin2)
     tmpState = sig1 + (sig2 * 2)
     if tmpState == 3 and oldState == 0:
-        counter -= 1
-        print counter
+        print -1
+        # print counter
     if tmpState == 2 and oldState == 1:
-        counter += 1
-        print counter
+        print 1
+        # print counter
     oldState = tmpState
 
-GPIO.add_event_detect(pin1, GPIO.BOTH, callback=my_callback)
+GPIO.add_event_detect(pin2, GPIO.BOTH, callback=my_callback)
 
 while continue_reading: # run until CTRL-C
     time.sleep(0.05) # without sleeping buffer is wining, especially in an node-red daemon; maybe even increase sleep
