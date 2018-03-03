@@ -1,14 +1,29 @@
 #!/usr/bin/env python
+# -*- coding: utf8 -*-
 
 # This is a simple an elegant & simple implementation of an rotary decoder WITHOUT the need of debouncing!! 
 # Its based on the wonderful explanation and example from Matthias Hertel at https://github.com/mathertel/RotaryEncoder
 # I also did a interrupt port of his code to Arduino, pm me at Twitter LSA232 if you need some
 
 import RPi.GPIO as GPIO
+import signal
 import time
+
+continue_reading = True
+
+# Capture SIGINT for cleanup when the script is aborted
+def end_read(signal,frame):
+    global continue_reading
+    print "Ctrl+C captured, ending read."
+    continue_reading = False
+    GPIO.cleanup()
+
+# Hook the SIGINT
+signal.signal(signal.SIGINT, end_read)
 
 pin1 = 20 # GPIO 20
 pin2 = 16 # GPIO 16
+lastCounter = 0
 counter = 0
 oldState = 0 # save last state
 
@@ -32,11 +47,5 @@ def my_callback(channel):
 
 GPIO.add_event_detect(pin1, GPIO.BOTH, callback=my_callback)
 
-
-try:
-    while True: # run until CTRL-C
-        # nothing to do
-        pass
-
-finally:
-    GPIO.cleanup()
+while continue_reading: # run until CTRL-C
+    time.sleep(0.05) # without sleeping buffer is wining, especially in an node-red daemon; maybe even increase sleep
